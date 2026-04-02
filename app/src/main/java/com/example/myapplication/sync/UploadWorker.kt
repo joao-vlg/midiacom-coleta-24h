@@ -16,6 +16,7 @@ class UploadWorker(
 ) : CoroutineWorker(context, params) {
 
     companion object {
+        const val UNIQUE_WORK_NAME = "unique_upload_sensor_data"
         const val KEY_UPLOADED = "uploaded"
         const val KEY_TOTAL = "total"
         const val KEY_COLETA = "coleta"

@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -15,27 +16,25 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Constraints
-import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.example.myapplication.data.AppDatabase
 import com.example.myapplication.sync.UploadWorker
+import java.util.UUID
 import java.util.concurrent.Executors
 
 class DataActivity : Activity() {
 
     // UI - Coleta
     private lateinit var layoutColetando: LinearLayout
-    private lateinit var textAccX: TextView
-    private lateinit var textAccY: TextView
-    private lateinit var textAccZ: TextView
-    private lateinit var textGyroX: TextView
-    private lateinit var textGyroY: TextView
-    private lateinit var textGyroZ: TextView
+    private lateinit var textAcc: TextView
+    private lateinit var textGyro: TextView
 
     // UI - Aguardando WiFi
     private lateinit var layoutAguardandoWifi: LinearLayout
@@ -49,33 +48,32 @@ class DataActivity : Activity() {
     private lateinit var layoutSucesso: LinearLayout
     private lateinit var textSucessoInfo: TextView
 
-    // UI - Falha
-    private lateinit var layoutFalha: LinearLayout
-    private lateinit var textFalhaInfo: TextView
+    // UI - Coleta interrompida
+    private lateinit var layoutColetaInterrompida: LinearLayout
+
+    // UI - Upload interrompido
+    private lateinit var layoutUploadInterrompido: LinearLayout
+    private lateinit var textUploadInterrompidoInfo: TextView
 
     private val dbExecutor = Executors.newSingleThreadExecutor()
     private var networkCallback: ConnectivityManager.NetworkCallback? = null
     private var totalToUpload = 0
+    private var uploadWorkObserver: Observer<List<WorkInfo>>? = null
 
     private val dataReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            // Acelerômetro
             if (intent?.hasExtra("ACC_X") == true) {
                 val x = intent.getFloatExtra("ACC_X", 0f)
                 val y = intent.getFloatExtra("ACC_Y", 0f)
                 val z = intent.getFloatExtra("ACC_Z", 0f)
-                textAccX.text = "X: %.2f".format(x)
-                textAccY.text = "Y: %.2f".format(y)
-                textAccZ.text = "Z: %.2f".format(z)
+                textAcc.text = "ACC  X %.2f  Y %.2f  Z %.2f".format(x, y, z)
             }
-            // Giroscópio
+
             if (intent?.hasExtra("GYRO_X") == true) {
                 val x = intent.getFloatExtra("GYRO_X", 0f)
                 val y = intent.getFloatExtra("GYRO_Y", 0f)
                 val z = intent.getFloatExtra("GYRO_Z", 0f)
-                textGyroX.text = "X: %.2f".format(x)
-                textGyroY.text = "Y: %.2f".format(y)
-                textGyroZ.text = "Z: %.2f".format(z)
+                textGyro.text = "GYR  X %.2f  Y %.2f  Z %.2f".format(x, y, z)
             }
         }
     }
@@ -86,12 +84,8 @@ class DataActivity : Activity() {
 
         // Bind views
         layoutColetando = findViewById(R.id.layoutColetando)
-        textAccX = findViewById(R.id.textAccX)
-        textAccY = findViewById(R.id.textAccY)
-        textAccZ = findViewById(R.id.textAccZ)
-        textGyroX = findViewById(R.id.textGyroX)
-        textGyroY = findViewById(R.id.textGyroY)
-        textGyroZ = findViewById(R.id.textGyroZ)
+        textAcc = findViewById(R.id.textAcc)
+        textGyro = findViewById(R.id.textGyro)
 
         layoutAguardandoWifi = findViewById(R.id.layoutAguardandoWifi)
 
@@ -102,56 +96,78 @@ class DataActivity : Activity() {
         layoutSucesso = findViewById(R.id.layoutSucesso)
         textSucessoInfo = findViewById(R.id.textSucessoInfo)
 
-        layoutFalha = findViewById(R.id.layoutFalha)
-        textFalhaInfo = findViewById(R.id.textFalhaInfo)
+        layoutColetaInterrompida = findViewById(R.id.layoutColetaInterrompida)
+
+        layoutUploadInterrompido = findViewById(R.id.layoutUploadInterrompido)
+        textUploadInterrompidoInfo = findViewById(R.id.textUploadInterrompidoInfo)
 
         val btnStopColeta = findViewById<Button>(R.id.btnStopColeta)
         val btnVoltarInicio = findViewById<Button>(R.id.btnVoltarInicio)
-        val btnTentarNovamente = findViewById<Button>(R.id.btnTentarNovamente)
-        val btnDesistir = findViewById<Button>(R.id.btnDesistir)
+        val btnUploadDaInterrompida = findViewById<Button>(R.id.btnUploadDaInterrompida)
+        val btnNovaColetaInterrompida = findViewById<Button>(R.id.btnNovaColetaInterrompida)
+        val btnRetomarUploadInterrompido = findViewById<Button>(R.id.btnRetomarUploadInterrompido)
+        val btnNovaColetaUploadInterrompido = findViewById<Button>(R.id.btnNovaColetaUploadInterrompido)
 
-        val modo = intent.getStringExtra("MODO") ?: "COLETA"
-
-        if (modo == "UPLOAD") {
-            // Veio da MainActivity para retomar upload
-            layoutColetando.visibility = View.GONE
-            pararEIniciarUpload()
+        when (intent.getStringExtra("MODO") ?: "COLETA") {
+            "COLETA" -> {
+                FlowStateStore.setState(this, AppFlowState.COLLECTING)
+                mostrarEstado("COLETANDO")
+            }
+            "UPLOAD" -> iniciarOuRetomarUpload()
+            "COLETA_INTERRUPTED" -> mostrarEstado("COLETA_INTERRUPPIDA")
+            "UPLOAD_INTERRUPTED" -> mostrarEstado("UPLOAD_INTERRUPPIDO")
+            else -> mostrarEstado("COLETANDO")
         }
 
         btnStopColeta.setOnClickListener {
-            stopService(Intent(this, SensorService::class.java))
-            pararEIniciarUpload()
+            val stopIntent = Intent(this, SensorService::class.java)
+            stopIntent.action = SensorService.ACTION_STOP_BY_USER
+            startService(stopIntent)
+            iniciarOuRetomarUpload()
         }
 
         btnVoltarInicio.setOnClickListener {
             finish()
         }
 
-        btnTentarNovamente.setOnClickListener {
-            mostrarEstado("ENVIANDO")
-            iniciarUploadWorker()
+        btnUploadDaInterrompida.setOnClickListener {
+            iniciarOuRetomarUpload()
         }
 
-        btnDesistir.setOnClickListener {
-            finish()
+        btnRetomarUploadInterrompido.setOnClickListener {
+            iniciarOuRetomarUpload()
+        }
+
+        btnNovaColetaInterrompida.setOnClickListener {
+            confirmarNovaColetaDescartandoPendentes()
+        }
+
+        btnNovaColetaUploadInterrompido.setOnClickListener {
+            confirmarNovaColetaDescartandoPendentes()
         }
     }
 
-    private fun pararEIniciarUpload() {
+    private fun iniciarOuRetomarUpload() {
         dbExecutor.execute {
             totalToUpload = AppDatabase.getInstance(this).sensorReadingDao().countPending()
             runOnUiThread {
                 if (totalToUpload == 0) {
                     textSucessoInfo.text = "Nenhum registro para enviar."
+                    FlowStateStore.setState(this, AppFlowState.IDLE)
                     mostrarEstado("SUCESSO")
                     return@runOnUiThread
                 }
 
-                if (isWifiAvailable()) {
+                if (hasUploadAtivo()) {
+                    mostrarEstado("ENVIANDO")
+                    FlowStateStore.setState(this, AppFlowState.UPLOADING)
+                    observarUpload()
+                } else if (isWifiAvailable()) {
                     mostrarEstado("ENVIANDO")
                     iniciarUploadWorker()
                 } else {
                     mostrarEstado("AGUARDANDO_WIFI")
+                    FlowStateStore.setState(this, AppFlowState.WAITING_WIFI)
                     registrarWifiCallback()
                 }
             }
@@ -168,21 +184,47 @@ class DataActivity : Activity() {
             .addTag(UploadWorker.TAG)
             .build()
 
+        FlowStateStore.setState(this, AppFlowState.UPLOADING)
+        WorkManager.getInstance(applicationContext).enqueueUniqueWork(
+            UploadWorker.UNIQUE_WORK_NAME,
+            ExistingWorkPolicy.KEEP,
+            uploadRequest
+        )
+
+        observarUpload()
+    }
+
+    private fun observarUpload() {
         val workManager = WorkManager.getInstance(applicationContext)
-        workManager.enqueue(uploadRequest)
+        if (uploadWorkObserver != null) return
 
-        // Observar progresso
-        workManager.getWorkInfoByIdLiveData(uploadRequest.id).observeForever { workInfo ->
-            if (workInfo == null) return@observeForever
+        uploadWorkObserver = Observer { workInfos ->
+            if (workInfos.isNullOrEmpty()) return@Observer
 
-            when (workInfo.state) {
-                WorkInfo.State.RUNNING -> {
-                    val uploaded = workInfo.progress.getInt(UploadWorker.KEY_UPLOADED, 0)
-                    val total = workInfo.progress.getInt(UploadWorker.KEY_TOTAL, totalToUpload)
-                    atualizarProgresso(uploaded, total)
-                }
+            val running = workInfos.firstOrNull {
+                it.state == WorkInfo.State.RUNNING ||
+                    it.state == WorkInfo.State.ENQUEUED ||
+                    it.state == WorkInfo.State.BLOCKED
+            }
+
+            if (running != null) {
+                val uploaded = running.progress.getInt(UploadWorker.KEY_UPLOADED, 0)
+                val total = running.progress.getInt(UploadWorker.KEY_TOTAL, totalToUpload)
+                atualizarProgresso(uploaded, total)
+                mostrarEstado("ENVIANDO")
+                FlowStateStore.setState(this, AppFlowState.UPLOADING)
+                return@Observer
+            }
+
+            val terminal = workInfos.firstOrNull {
+                it.state == WorkInfo.State.SUCCEEDED ||
+                    it.state == WorkInfo.State.FAILED ||
+                    it.state == WorkInfo.State.CANCELLED
+            } ?: return@Observer
+
+            when (terminal.state) {
                 WorkInfo.State.SUCCEEDED -> {
-                    val outputData = workInfo.outputData
+                    val outputData = terminal.outputData
                     val uploaded = outputData.getInt(UploadWorker.KEY_UPLOADED, 0)
                     val coletaNum = outputData.getLong(UploadWorker.KEY_COLETA, -1)
                     if (coletaNum > 0) {
@@ -190,18 +232,49 @@ class DataActivity : Activity() {
                     } else {
                         textSucessoInfo.text = "Nenhum registro para enviar."
                     }
+                    FlowStateStore.setState(this, AppFlowState.IDLE)
                     mostrarEstado("SUCESSO")
+                    limparObservadorUpload()
                 }
-                WorkInfo.State.FAILED -> {
-                    val outputData = workInfo.outputData
-                    val error = outputData.getString(UploadWorker.KEY_ERROR) ?: "Erro desconhecido"
+                WorkInfo.State.FAILED, WorkInfo.State.CANCELLED -> {
+                    val outputData = terminal.outputData
+                    val error = outputData.getString(UploadWorker.KEY_ERROR)
+                        ?: "O upload foi interrompido."
                     val uploaded = outputData.getInt(UploadWorker.KEY_UPLOADED, 0)
                     val total = outputData.getInt(UploadWorker.KEY_TOTAL, totalToUpload)
-                    textFalhaInfo.text = "$error\n$uploaded de $total registros enviados."
-                    mostrarEstado("FALHA")
+                    textUploadInterrompidoInfo.text = "$error\n$uploaded de $total registros enviados."
+                    FlowStateStore.setState(this, AppFlowState.UPLOAD_INTERRUPTED)
+                    mostrarEstado("UPLOAD_INTERRUPPIDO")
+                    limparObservadorUpload()
                 }
-                else -> { /* ENQUEUED, BLOCKED, CANCELLED */ }
+                else -> Unit
             }
+        }
+
+        workManager.getWorkInfosForUniqueWorkLiveData(UploadWorker.UNIQUE_WORK_NAME)
+            .observeForever(uploadWorkObserver!!)
+    }
+
+    private fun limparObservadorUpload() {
+        val observer = uploadWorkObserver ?: return
+        WorkManager.getInstance(applicationContext)
+            .getWorkInfosForUniqueWorkLiveData(UploadWorker.UNIQUE_WORK_NAME)
+            .removeObserver(observer)
+        uploadWorkObserver = null
+    }
+
+    private fun hasUploadAtivo(): Boolean {
+        return try {
+            val infos = WorkManager.getInstance(applicationContext)
+                .getWorkInfosForUniqueWork(UploadWorker.UNIQUE_WORK_NAME)
+                .get()
+            infos.any {
+                it.state == WorkInfo.State.RUNNING ||
+                    it.state == WorkInfo.State.ENQUEUED ||
+                    it.state == WorkInfo.State.BLOCKED
+            }
+        } catch (_: Exception) {
+            false
         }
     }
 
@@ -216,14 +289,16 @@ class DataActivity : Activity() {
         layoutAguardandoWifi.visibility = View.GONE
         layoutEnviando.visibility = View.GONE
         layoutSucesso.visibility = View.GONE
-        layoutFalha.visibility = View.GONE
+        layoutColetaInterrompida.visibility = View.GONE
+        layoutUploadInterrompido.visibility = View.GONE
 
         when (estado) {
             "COLETANDO" -> layoutColetando.visibility = View.VISIBLE
             "AGUARDANDO_WIFI" -> layoutAguardandoWifi.visibility = View.VISIBLE
             "ENVIANDO" -> layoutEnviando.visibility = View.VISIBLE
             "SUCESSO" -> layoutSucesso.visibility = View.VISIBLE
-            "FALHA" -> layoutFalha.visibility = View.VISIBLE
+            "COLETA_INTERRUPPIDA" -> layoutColetaInterrompida.visibility = View.VISIBLE
+            "UPLOAD_INTERRUPPIDO" -> layoutUploadInterrompido.visibility = View.VISIBLE
         }
     }
 
@@ -244,9 +319,9 @@ class DataActivity : Activity() {
             override fun onAvailable(network: Network) {
                 runOnUiThread {
                     mostrarEstado("ENVIANDO")
+                    FlowStateStore.setState(this@DataActivity, AppFlowState.UPLOADING)
                     iniciarUploadWorker()
                 }
-                // Remover callback após detectar WiFi
                 cm.unregisterNetworkCallback(this)
                 networkCallback = null
             }
@@ -269,10 +344,43 @@ class DataActivity : Activity() {
     override fun onDestroy() {
         super.onDestroy()
         dbExecutor.shutdown()
-        // Limpar callback de rede se ainda registrado
+        limparObservadorUpload()
+
         networkCallback?.let {
             val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            try { cm.unregisterNetworkCallback(it) } catch (_: Exception) {}
+            try {
+                cm.unregisterNetworkCallback(it)
+            } catch (_: Exception) {
+            }
         }
+    }
+
+    private fun confirmarNovaColetaDescartandoPendentes() {
+        AlertDialog.Builder(this)
+            .setTitle("Iniciar nova coleta")
+            .setMessage("Os dados pendentes desta coleta serão descartados.")
+            .setPositiveButton("Continuar") { _, _ ->
+                dbExecutor.execute {
+                    WorkManager.getInstance(applicationContext)
+                        .cancelUniqueWork(UploadWorker.UNIQUE_WORK_NAME)
+                    AppDatabase.getInstance(this).sensorReadingDao().deleteAll()
+
+                    runOnUiThread {
+                        iniciarNovaColeta()
+                    }
+                }
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun iniciarNovaColeta() {
+        val sessionId = UUID.randomUUID().toString()
+        val serviceIntent = Intent(this, SensorService::class.java)
+        serviceIntent.putExtra("SESSION_ID", sessionId)
+        androidx.core.content.ContextCompat.startForegroundService(this, serviceIntent)
+
+        FlowStateStore.setState(this, AppFlowState.COLLECTING)
+        mostrarEstado("COLETANDO")
     }
 }

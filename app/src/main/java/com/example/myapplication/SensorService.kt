@@ -15,12 +15,19 @@ import java.util.*
 import java.util.concurrent.Executors
 
 class SensorService : Service(), SensorEventListener {
+    companion object {
+        const val ACTION_STOP_BY_USER = "com.example.myapplication.action.STOP_BY_USER"
+        @Volatile
+        var isRunning: Boolean = false
+    }
+
     private lateinit var sensorManager: SensorManager
     private var accSensor: Sensor? = null
     private var gyroSensor: Sensor? = null
     private var sessionId: String = "unknown"
     private var lastUpdateAcc: Long = 0
     private var lastUpdateGyro: Long = 0
+    private var stoppedByUser: Boolean = false
 
     private lateinit var broadcaster: LocalBroadcastManager
     private lateinit var dao: com.example.myapplication.data.SensorReadingDao
@@ -30,11 +37,21 @@ class SensorService : Service(), SensorEventListener {
         super.onCreate()
         broadcaster = LocalBroadcastManager.getInstance(this)
         dao = AppDatabase.getInstance(this).sensorReadingDao()
+        isRunning = true
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == ACTION_STOP_BY_USER) {
+            stoppedByUser = true
+            stopForeground(STOP_FOREGROUND_REMOVE)
+            stopSelf()
+            return START_NOT_STICKY
+        }
+
+        stoppedByUser = false
         sessionId = intent?.getStringExtra("SESSION_ID") ?: "unknown"
         startForeground(1, createNotification())
+        FlowStateStore.setState(this, AppFlowState.COLLECTING)
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         accSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
@@ -156,6 +173,11 @@ class SensorService : Service(), SensorEventListener {
         super.onDestroy()
         sensorManager.unregisterListener(this)
         dbExecutor.shutdown()
+        isRunning = false
+
+        if (!stoppedByUser && FlowStateStore.getState(this) == AppFlowState.COLLECTING) {
+            FlowStateStore.setState(this, AppFlowState.COLLECTION_INTERRUPTED)
+        }
     }
 
     override fun onBind(i: Intent?): IBinder? = null

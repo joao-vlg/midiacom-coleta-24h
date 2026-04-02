@@ -1,272 +1,255 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black"
     android:padding="10dp">
 
     <LinearLayout
+        android:id="@+id/layoutColetando"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center">
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
 
-        <!-- ========== ESTADO: COLETANDO ========== -->
-        <LinearLayout
-            android:id="@+id/layoutColetando"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Coleta Ativa"
+            android:textColor="#4CAF50"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textAcc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center">
-
-            <TextView
-                android:id="@+id/textTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Coleta Ativa"
-                android:textColor="#4CAF50"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray"
-                android:layout_marginTop="8dp" />
-
-            <!-- Acelerômetro -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Acelerômetro (m/s²)"
-                android:textColor="@android:color/darker_gray"
-                android:textSize="10sp"
-                android:layout_marginTop="8dp" />
-
-            <TextView
-                android:id="@+id/textAccX"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="X: 0.00"
-                android:textColor="#FF5252"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textAccY"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Y: 0.00"
-                android:textColor="#448AFF"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textAccZ"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Z: 0.00"
-                android:textColor="#4CAF50"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray"
-                android:layout_marginTop="8dp" />
-
-            <!-- Giroscópio -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Giroscópio (rad/s)"
-                android:textColor="@android:color/darker_gray"
-                android:textSize="10sp"
-                android:layout_marginTop="8dp" />
-
-            <TextView
-                android:id="@+id/textGyroX"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="X: 0.00"
-                android:textColor="#FF9800"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textGyroY"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Y: 0.00"
-                android:textColor="#E040FB"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textGyroZ"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Z: 0.00"
-                android:textColor="#00BCD4"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/btnStopColeta"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="Parar Coleta"
-                android:backgroundTint="#F44336"
-                android:textSize="12sp" />
-        </LinearLayout>
-
-        <!-- ========== ESTADO: AGUARDANDO WIFI ========== -->
-        <LinearLayout
-            android:id="@+id/layoutAguardandoWifi"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_marginTop="10dp"
             android:gravity="center"
-            android:visibility="gone">
+            android:text="ACC  X 0.00  Y 0.00  Z 0.00"
+            android:textColor="#FF8A80"
+            android:textSize="11sp"
+            android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Aguardando WiFi"
-                android:textColor="#FFC107"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Habilite o WiFi para fazer upload da coleta"
-                android:textColor="@android:color/white"
-                android:textSize="11sp"
-                android:textAlignment="center"
-                android:layout_marginTop="10dp" />
-        </LinearLayout>
-
-        <!-- ========== ESTADO: ENVIANDO ========== -->
-        <LinearLayout
-            android:id="@+id/layoutEnviando"
+        <TextView
+            android:id="@+id/textGyro"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_marginTop="6dp"
             android:gravity="center"
-            android:visibility="gone">
+            android:text="GYR  X 0.00  Y 0.00  Z 0.00"
+            android:textColor="#80D8FF"
+            android:textSize="11sp"
+            android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Enviando Dados..."
-                android:textColor="#FF9800"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Atualiza a cada 10s"
+            android:textColor="#B0BEC5"
+            android:textSize="10sp" />
 
-            <ProgressBar
-                android:id="@+id/progressUpload"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:max="100"
-                android:progress="0" />
-
-            <TextView
-                android:id="@+id/textProgressInfo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0 de 0 registros enviados (0%)"
-                android:textColor="@android:color/white"
-                android:textSize="10sp"
-                android:layout_marginTop="5dp" />
-        </LinearLayout>
-
-        <!-- ========== ESTADO: SUCESSO ========== -->
-        <LinearLayout
-            android:id="@+id/layoutSucesso"
+        <Button
+            android:id="@+id/btnStopColeta"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Upload Concluído!"
-                android:textColor="#4CAF50"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textSucessoInfo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textColor="@android:color/white"
-                android:textSize="10sp"
-                android:textAlignment="center"
-                android:layout_marginTop="5dp" />
-
-            <Button
-                android:id="@+id/btnVoltarInicio"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="Voltar ao Início"
-                android:backgroundTint="#4CAF50"
-                android:textColor="@android:color/white" />
-        </LinearLayout>
-
-        <!-- ========== ESTADO: FALHA ========== -->
-        <LinearLayout
-            android:id="@+id/layoutFalha"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Falha no Upload"
-                android:textColor="#F44336"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textFalhaInfo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textColor="@android:color/white"
-                android:textSize="10sp"
-                android:textAlignment="center"
-                android:layout_marginTop="5dp" />
-
-            <Button
-                android:id="@+id/btnTentarNovamente"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="Tentar Novamente"
-                android:backgroundTint="#2196F3"
-                android:textColor="@android:color/white" />
-
-            <Button
-                android:id="@+id/btnDesistir"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="Desistir"
-                android:backgroundTint="#757575"
-                android:textColor="@android:color/white" />
-        </LinearLayout>
-
+            android:layout_marginTop="12dp"
+            android:backgroundTint="#F44336"
+            android:text="Parar Coleta"
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
     </LinearLayout>
-</ScrollView>
+
+    <LinearLayout
+        android:id="@+id/layoutAguardandoWifi"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Aguardando WiFi"
+            android:textColor="#FFC107"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="Conecte ao WiFi para continuar o upload"
+            android:textColor="@android:color/white"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutEnviando"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Enviando Dados"
+            android:textColor="#FF9800"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <ProgressBar
+            android:id="@+id/progressUpload"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:max="100"
+            android:progress="0" />
+
+        <TextView
+            android:id="@+id/textProgressInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:text="0 de 0 registros enviados (0%)"
+            android:textColor="@android:color/white"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutSucesso"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Upload Concluido"
+            android:textColor="#4CAF50"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textSucessoInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="10sp" />
+
+        <Button
+            android:id="@+id/btnVoltarInicio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="#4CAF50"
+            android:text="Voltar ao Inicio"
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutColetaInterrompida"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Coleta Interrompida"
+            android:textColor="#FFB300"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="A coleta parou sem comando do usuario."
+            android:textColor="@android:color/white"
+            android:textSize="10sp" />
+
+        <Button
+            android:id="@+id/btnUploadDaInterrompida"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="#2196F3"
+            android:text="Iniciar Upload"
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btnNovaColetaInterrompida"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:backgroundTint="#4CAF50"
+            android:text="Nova Coleta"
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutUploadInterrompido"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Upload Interrompido"
+            android:textColor="#F44336"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textUploadInterrompidoInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="O upload foi interrompido."
+            android:textColor="@android:color/white"
+            android:textSize="10sp" />
+
+        <Button
+            android:id="@+id/btnRetomarUploadInterrompido"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="#2196F3"
+            android:text="Retomar Upload"
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btnNovaColetaUploadInterrompido"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:backgroundTint="#4CAF50"
+            android:text="Nova Coleta"
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+</FrameLayout>
