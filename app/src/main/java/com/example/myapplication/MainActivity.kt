@@ -51,16 +51,16 @@ class MainActivity : Activity() {
 
                 when {
                     effectiveState == AppFlowState.COLLECTING && SensorService.isRunning -> {
-                        abrirDataActivity("COLETA")
+                        abrirDataActivity("COLETA", finishCurrent = true)
                     }
                     uploadAtivo || effectiveState == AppFlowState.UPLOADING || effectiveState == AppFlowState.WAITING_WIFI -> {
-                        abrirDataActivity("UPLOAD")
+                        abrirDataActivity("UPLOAD", finishCurrent = true)
                     }
                     effectiveState == AppFlowState.COLLECTION_INTERRUPTED && count > 0 -> {
-                        abrirDataActivity("COLETA_INTERRUPTED")
+                        abrirDataActivity("COLETA_INTERRUPTED", finishCurrent = true)
                     }
                     (effectiveState == AppFlowState.UPLOAD_INTERRUPTED && count > 0) || count > 0 -> {
-                        abrirDataActivity("UPLOAD_INTERRUPTED")
+                        abrirDataActivity("UPLOAD_INTERRUPTED", finishCurrent = true)
                     }
                     else -> {
                         layoutNormal.visibility = View.VISIBLE
@@ -85,10 +85,13 @@ class MainActivity : Activity() {
         }
     }
 
-    private fun abrirDataActivity(modo: String) {
+    private fun abrirDataActivity(modo: String, finishCurrent: Boolean = false) {
         val intent = Intent(this, DataActivity::class.java)
         intent.putExtra("MODO", modo)
         startActivity(intent)
+        if (finishCurrent) {
+            finish()
+        }
     }
 
     private fun iniciarColeta() {
@@ -102,6 +105,7 @@ class MainActivity : Activity() {
         dataIntent.putExtra("SESSION_ID", sessionId)
         dataIntent.putExtra("MODO", "COLETA")
         startActivity(dataIntent)
+        finish()
     }
 
     override fun onDestroy() {

@@ -2,10 +2,8 @@ package com.example.myapplication
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
@@ -17,7 +15,6 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.lifecycle.Observer
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
@@ -33,8 +30,6 @@ class DataActivity : Activity() {
 
     // UI - Coleta
     private lateinit var layoutColetando: LinearLayout
-    private lateinit var textAcc: TextView
-    private lateinit var textGyro: TextView
 
     // UI - Aguardando WiFi
     private lateinit var layoutAguardandoWifi: LinearLayout
@@ -60,32 +55,12 @@ class DataActivity : Activity() {
     private var totalToUpload = 0
     private var uploadWorkObserver: Observer<List<WorkInfo>>? = null
 
-    private val dataReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.hasExtra("ACC_X") == true) {
-                val x = intent.getFloatExtra("ACC_X", 0f)
-                val y = intent.getFloatExtra("ACC_Y", 0f)
-                val z = intent.getFloatExtra("ACC_Z", 0f)
-                textAcc.text = "ACC  X %.2f  Y %.2f  Z %.2f".format(x, y, z)
-            }
-
-            if (intent?.hasExtra("GYRO_X") == true) {
-                val x = intent.getFloatExtra("GYRO_X", 0f)
-                val y = intent.getFloatExtra("GYRO_Y", 0f)
-                val z = intent.getFloatExtra("GYRO_Z", 0f)
-                textGyro.text = "GYR  X %.2f  Y %.2f  Z %.2f".format(x, y, z)
-            }
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_data)
 
         // Bind views
         layoutColetando = findViewById(R.id.layoutColetando)
-        textAcc = findViewById(R.id.textAcc)
-        textGyro = findViewById(R.id.textGyro)
 
         layoutAguardandoWifi = findViewById(R.id.layoutAguardandoWifi)
 
@@ -127,6 +102,9 @@ class DataActivity : Activity() {
         }
 
         btnVoltarInicio.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            startActivity(intent)
             finish()
         }
 
@@ -324,18 +302,6 @@ class DataActivity : Activity() {
             }
         }
         cm.registerNetworkCallback(request, networkCallback!!)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        LocalBroadcastManager.getInstance(this)
-            .registerReceiver(dataReceiver, IntentFilter("SENSOR_DATA"))
-    }
-
-    override fun onPause() {
-        super.onPause()
-        LocalBroadcastManager.getInstance(this)
-            .unregisterReceiver(dataReceiver)
     }
 
     override fun onDestroy() {

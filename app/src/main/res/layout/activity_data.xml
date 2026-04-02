@@ -21,34 +21,13 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/textAcc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:gravity="center"
-            android:text="ACC  X 0.00  Y 0.00  Z 0.00"
-            android:textColor="#FF8A80"
-            android:textSize="11sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/textGyro"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:gravity="center"
-            android:text="GYR  X 0.00  Y 0.00  Z 0.00"
-            android:textColor="#80D8FF"
-            android:textSize="11sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="Atualiza a cada 10s"
-            android:textColor="#B0BEC5"
-            android:textSize="10sp" />
+            android:text="Durante a coleta, evite interagir com o relogio"
+            android:textColor="@android:color/white"
+            android:textSize="11sp" />
 
         <Button
             android:id="@+id/btnStopColeta"
