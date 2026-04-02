@@ -15,44 +15,77 @@
             android:layout_width="match_parent"
             android:layout_height="20dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Coleta de Dados"
-            android:textColor="@android:color/white"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/editUserId"
+        <!-- Estado normal: Iniciar Coleta -->
+        <LinearLayout
+            android:id="@+id/layoutNormal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="ID do Indivíduo"
-            android:textColor="@android:color/white"
-            android:textColorHint="@android:color/darker_gray"
-            android:background="@android:color/darker_gray"
-            android:padding="8dp"
-            android:layout_marginTop="10dp"
-            android:inputType="text"
-            android:textSize="12sp" />
+            android:orientation="vertical"
+            android:gravity="center">
 
-        <Button
-            android:id="@+id/btnStart"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Coletor 24h"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnStart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Iniciar Coleta"
+                android:backgroundTint="#4CAF50"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+
+        <!-- Estado pendentes: dados de coleta anterior -->
+        <LinearLayout
+            android:id="@+id/layoutPendentes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Iniciar Coleta"
-            android:backgroundTint="#4CAF50"
-            android:textColor="@android:color/white" />
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone">
 
-        <Button
-            android:id="@+id/btnStop"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="Parar"
-            android:backgroundTint="#F44336"
-            android:textColor="@android:color/white" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dados Pendentes"
+                android:textColor="#FFC107"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textPendentes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Há registros de uma coleta anterior aguardando envio"
+                android:textColor="@android:color/white"
+                android:textSize="10sp"
+                android:textAlignment="center"
+                android:layout_marginTop="5dp" />
+
+            <Button
+                android:id="@+id/btnRetomarUpload"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Retomar Upload"
+                android:backgroundTint="#2196F3"
+                android:textColor="@android:color/white" />
+
+            <Button
+                android:id="@+id/btnNovaColeta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Nova Coleta"
+                android:backgroundTint="#4CAF50"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
 
         <Space
             android:layout_width="match_parent"

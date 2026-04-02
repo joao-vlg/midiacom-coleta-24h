@@ -11,73 +11,262 @@
         android:orientation="vertical"
         android:gravity="center">
 
-        <TextView
-            android:id="@+id/textTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Coleta Ativa"
-            android:textColor="#4CAF50"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/textUserId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Usuário: --"
-            android:textColor="@android:color/white"
-            android:textSize="12sp"
-            android:layout_marginTop="5dp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray"
-            android:layout_marginTop="10dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Acelerômetro (m/s²)"
-            android:textColor="@android:color/darker_gray"
-            android:textSize="10sp"
-            android:layout_marginTop="10dp" />
-
-        <TextView
-            android:id="@+id/textAccX"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="X: 0.00"
-            android:textColor="#FF5252"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/textAccY"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Y: 0.00"
-            android:textColor="#448AFF"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/textAccZ"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Z: 0.00"
-            android:textColor="#4CAF50"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/btnStopColeta"
+        <!-- ========== ESTADO: COLETANDO ========== -->
+        <LinearLayout
+            android:id="@+id/layoutColetando"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:text="Parar Coleta"
-            android:backgroundTint="#F44336"
-            android:textSize="12sp" />
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/textTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Coleta Ativa"
+                android:textColor="#4CAF50"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                android:layout_marginTop="8dp" />
+
+            <!-- Acelerômetro -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Acelerômetro (m/s²)"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="10sp"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:id="@+id/textAccX"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="X: 0.00"
+                android:textColor="#FF5252"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textAccY"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Y: 0.00"
+                android:textColor="#448AFF"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textAccZ"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Z: 0.00"
+                android:textColor="#4CAF50"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                android:layout_marginTop="8dp" />
+
+            <!-- Giroscópio -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Giroscópio (rad/s)"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="10sp"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:id="@+id/textGyroX"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="X: 0.00"
+                android:textColor="#FF9800"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textGyroY"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Y: 0.00"
+                android:textColor="#E040FB"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textGyroZ"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Z: 0.00"
+                android:textColor="#00BCD4"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnStopColeta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Parar Coleta"
+                android:backgroundTint="#F44336"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- ========== ESTADO: AGUARDANDO WIFI ========== -->
+        <LinearLayout
+            android:id="@+id/layoutAguardandoWifi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Aguardando WiFi"
+                android:textColor="#FFC107"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Habilite o WiFi para fazer upload da coleta"
+                android:textColor="@android:color/white"
+                android:textSize="11sp"
+                android:textAlignment="center"
+                android:layout_marginTop="10dp" />
+        </LinearLayout>
+
+        <!-- ========== ESTADO: ENVIANDO ========== -->
+        <LinearLayout
+            android:id="@+id/layoutEnviando"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enviando Dados..."
+                android:textColor="#FF9800"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <ProgressBar
+                android:id="@+id/progressUpload"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:max="100"
+                android:progress="0" />
+
+            <TextView
+                android:id="@+id/textProgressInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 de 0 registros enviados (0%)"
+                android:textColor="@android:color/white"
+                android:textSize="10sp"
+                android:layout_marginTop="5dp" />
+        </LinearLayout>
+
+        <!-- ========== ESTADO: SUCESSO ========== -->
+        <LinearLayout
+            android:id="@+id/layoutSucesso"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Upload Concluído!"
+                android:textColor="#4CAF50"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textSucessoInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="@android:color/white"
+                android:textSize="10sp"
+                android:textAlignment="center"
+                android:layout_marginTop="5dp" />
+
+            <Button
+                android:id="@+id/btnVoltarInicio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Voltar ao Início"
+                android:backgroundTint="#4CAF50"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+
+        <!-- ========== ESTADO: FALHA ========== -->
+        <LinearLayout
+            android:id="@+id/layoutFalha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Falha no Upload"
+                android:textColor="#F44336"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textFalhaInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="@android:color/white"
+                android:textSize="10sp"
+                android:textAlignment="center"
+                android:layout_marginTop="5dp" />
+
+            <Button
+                android:id="@+id/btnTentarNovamente"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Tentar Novamente"
+                android:backgroundTint="#2196F3"
+                android:textColor="@android:color/white" />
+
+            <Button
+                android:id="@+id/btnDesistir"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Desistir"
+                android:backgroundTint="#757575"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>
