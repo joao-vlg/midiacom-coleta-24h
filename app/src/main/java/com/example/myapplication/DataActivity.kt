@@ -225,10 +225,9 @@ class DataActivity : Activity() {
             when (terminal.state) {
                 WorkInfo.State.SUCCEEDED -> {
                     val outputData = terminal.outputData
-                    val uploaded = outputData.getInt(UploadWorker.KEY_UPLOADED, 0)
                     val coletaNum = outputData.getLong(UploadWorker.KEY_COLETA, -1)
                     if (coletaNum > 0) {
-                        textSucessoInfo.text = "Todos os $uploaded registros foram enviados.\nColeta nº $coletaNum."
+                        textSucessoInfo.text = "Coleta nº $coletaNum."
                     } else {
                         textSucessoInfo.text = "Nenhum registro para enviar."
                     }
@@ -240,9 +239,7 @@ class DataActivity : Activity() {
                     val outputData = terminal.outputData
                     val error = outputData.getString(UploadWorker.KEY_ERROR)
                         ?: "O upload foi interrompido."
-                    val uploaded = outputData.getInt(UploadWorker.KEY_UPLOADED, 0)
-                    val total = outputData.getInt(UploadWorker.KEY_TOTAL, totalToUpload)
-                    textUploadInterrompidoInfo.text = "$error\n$uploaded de $total registros enviados."
+                    textUploadInterrompidoInfo.text = error
                     FlowStateStore.setState(this, AppFlowState.UPLOAD_INTERRUPTED)
                     mostrarEstado("UPLOAD_INTERRUPPIDO")
                     limparObservadorUpload()
@@ -281,7 +278,7 @@ class DataActivity : Activity() {
     private fun atualizarProgresso(uploaded: Int, total: Int) {
         val percent = if (total > 0) (uploaded * 100) / total else 0
         progressUpload.progress = percent
-        textProgressInfo.text = "$uploaded de $total registros enviados ($percent%)"
+        textProgressInfo.text = "$percent%"
     }
 
     private fun mostrarEstado(estado: String) {
